@@ -3,9 +3,9 @@ Visual studio setup project
 
 ### What is this
 
-This is **Visual Studio** setting project.
+This is the **Visual Studio** setting project.
 
-It apply automatically **Additional library path** and copy  **dll** files to location of **exe** file. And set working directory as **$(OutDir)**.
+It apply **Additional library path** and copy  **dll** files to location of **exe** file  automatically. And set working directory as **$(OutDir)**.
 
 ### Support platform
 * `Windows 10 x64`
@@ -15,7 +15,7 @@ It apply automatically **Additional library path** and copy  **dll** files to lo
 ### How to use
 
 ##### 1. Install vspring
-Download [install_vspring.exe](https://www.dropbox.com/s/9s3f6lhrxiib2cy/install_vspring.exe?dl=1) and run as administrator follow this command.
+Download [install_vspring.exe](https://www.dropbox.com/s/9s3f6lhrxiib2cy/install_vspring.exe?dl=1) and run as administrator or follow this command.
 ```
 git clone https://github.com/springkim/VSpring
 cd VSpring
@@ -23,25 +23,25 @@ install_vspring.exe
 ```
 
 ##### 2.Apply to project
-There is a **VSpring32.props** and **VSpring64.props** is in the same directory, When you finished install.
+Both **VSpring32.props** and **VSpring64.props** are in the same directory, When All the installation are finished.
 
-Make project whatever you want.
+First, Make any project whatever you want.
 ![](https://i.imgur.com/DkMLJhT.png)
 
-Copy **VSpring32.props** and **VSpring64.props** into **Solution directory**.
+Second, Copy both **VSpring32.props** and **VSpring64.props** into **Solution directory**.
 ![](https://i.imgur.com/Bw1nimK.png)
 
-Open **Property Manager** and append **VSpring??.props** according to your project platform.
+Third, Open **Property Manager** and append the **VSpring??.props** according to your project platform.
 ![](https://i.imgur.com/kWvEPHf.png)
 
-Put include `#include<VSpring>` on your source file. And build.
+Finally, Put `#include<VSpring>` on your source file. And build.
 
-Then **VSpring** is change your project property. So the visual studio will show message about reload.
+Then **VSpring** changes your project property. So, Visual studio will show message about reload.
 
 It shows only once. Click **Reload All**.
 ![](https://i.imgur.com/vhw6PsM.png)
 
-Follow this rule if you want use 3rdparty library.
+If you want use 3rdparty library, Follow this rule.
 
 ```
 Solution Directory
@@ -66,6 +66,7 @@ Solution Directory
 ├ VSpring32.props
 └ VSpring64.props
 ```
+
 There is a sample project with opencv library in git reposotory.
 
 
