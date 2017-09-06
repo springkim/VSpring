@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <OutDir>$(SolutionDir)x86\$(Configuration)\</OutDir>
+    <IntDir>$(temp)\($SolutionName)\$(ProjectName)\</IntDir>
+    <_PropertySheetDisplayName>VSpring32</_PropertySheetDisplayName>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)3rdparty\include\</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(SolutionDir)3rdparty\lib\x86\$(Configuration)\;$(SolutionDir)3rdparty\lib\x86\</AdditionalLibraryDirectories>
+    </Link>
+    <PreBuildEvent />
+    <PostBuildEvent>
+      <Command>if exist "$(SolutionDir)3rdparty\bin\x86\$(Configuration)\" (xcopy /Y "$(SolutionDir)3rdparty\bin\x86\$(Configuration)\*.dll" "$(TargetDir)")
+if exist "$(SolutionDir)3rdparty\bin\x86\" (xcopy /Y "$(SolutionDir)3rdparty\bin\x86\*.dll" "$(TargetDir)")
+</Command>
+    </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>if exist "C:\Windows\syswow64\VSpringLibProps_x86.exe" (VSpringLibProps_x86.exe "$(SolutionDir)$(ProjectName)\$(ProjectName).vcxproj" "$(SolutionDir)3rdparty\lib\") else (echo *****VSpring not found*****)
+</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup />
+</Project>

@@ -1,0 +1,248 @@
+﻿/*
+*  main.cpp
+*  VSpring(DebuggingProps)
+*
+*  Created by kimbom on 2017. 9. 3...
+*  Copyright 2017 kimbom. All rights reserved.
+*
+*/
+#include<iostream>
+#include<fstream>
+#include<string>
+#include<vector>
+#include<map>
+#include<algorithm>
+#include<Windows.h>
+#include<array>
+#include<sstream>
+#include<minwinbase.h>	//WIN32_FIND_DATAA
+#include<minwindef.h>	//HANDLE
+#include<fileapi.h>		//FindFirstFileA
+#include"tinyxml2.h"
+
+
+std::string replace_all(
+	__in const std::string &message,
+	__in const std::string &pattern,
+	__in const std::string &replace
+) {
+
+	std::string result = message;
+	std::string::size_type pos = 0;
+	std::string::size_type offset = 0;
+
+	while ((pos = result.find(pattern, offset)) != std::string::npos) {
+		result.replace(result.begin() + pos, result.begin() + pos + pattern.size(), replace);
+		offset = pos + replace.size();
+	}
+
+	return result;
+}
+int GenerateXML(std::string file) {
+	std::string content = "\
+<?xml version=\"1.0\" encoding=\"utf-8\"?>\n\
+<Project ToolsVersion=\"14.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\n\
+  <PropertyGroup Condition=\"\'$(Configuration)|$(Platform)\'==\'Debug|Win32\'\">\n\
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>\n\
+    <LocalDebuggerWorkingDirectory>$(OutDir)</LocalDebuggerWorkingDirectory>\n\
+  </PropertyGroup>\n\
+  <PropertyGroup Condition=\"\'$(Configuration)|$(Platform)\'==\'Release|Win32\'\">\n\
+    <LocalDebuggerWorkingDirectory>$(OutDir)</LocalDebuggerWorkingDirectory>\n\
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>\n\
+  </PropertyGroup>\n\
+  <PropertyGroup Condition=\"\'$(Configuration)|$(Platform)\'==\'Debug|x64\'\">\n\
+    <LocalDebuggerWorkingDirectory>$(OutDir)</LocalDebuggerWorkingDirectory>\n\
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>\n\
+  </PropertyGroup>\n\
+  <PropertyGroup Condition=\"\'$(Configuration)|$(Platform)\'==\'Release|x64\'\">\n\
+    <LocalDebuggerWorkingDirectory>$(OutDir)</LocalDebuggerWorkingDirectory>\n\
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>\n\
+  </PropertyGroup>\n\
+</Project>\n";
+	std::ofstream fout;
+	fout.open(file);
+	if (fout.is_open() == false) {
+		return 1;
+	}
+	fout << content;
+	fout.close();
+	return 0;
+}
+int ConfigXML(std::string file) {
+	//return 0 : success
+	//return 1  : fail
+	//return 2 : non-update
+	tinyxml2::XMLDocument doc;
+	tinyxml2::XMLError xml_error = doc.LoadFile(file.c_str());
+	if (xml_error != tinyxml2::XML_SUCCESS) {
+		return GenerateXML(file);
+	}
+	bool changed = false;
+	std::map<std::string, bool> property_group;
+	property_group.insert(std::make_pair("\'$(Configuration)|$(Platform)\'==\'Debug|Win32\'", false));
+	property_group.insert(std::make_pair("\'$(Configuration)|$(Platform)\'==\'Release|Win32\'", false));
+	property_group.insert(std::make_pair("\'$(Configuration)|$(Platform)\'==\'Debug|x64\'", false));
+	property_group.insert(std::make_pair("\'$(Configuration)|$(Platform)\'==\'Release|x64\'", false));
+	tinyxml2::XMLElement* root = doc.RootElement();
+	tinyxml2::XMLElement* pgroup = doc.RootElement()->FirstChildElement();
+	if (pgroup == nullptr) {
+		changed = true;
+		for (auto&pge : property_group) {
+			tinyxml2::XMLElement* e = doc.NewElement("PropertyGroup");
+			{
+				tinyxml2::XMLElement* e1 = doc.NewElement("DebuggerFlavor");
+				e1->SetText("WindowsLocalDebugger");
+				e->LinkEndChild(e1);
+				e1 = doc.NewElement("LocalDebuggerWorkingDirectory");
+				e1->SetText("$(OutDir)");
+				e->LinkEndChild(e1);
+			}
+			e->SetAttribute("Condition", pge.first.c_str());
+			root->LinkEndChild(e);
+		}
+	} else {
+		for (tinyxml2::XMLElement* c = pgroup; c != nullptr; c = c->NextSiblingElement()) {
+			if (c->Attribute("Condition") == nullptr) {
+				return GenerateXML(file);
+			}
+			auto it = property_group.find(c->Attribute("Condition"));
+			if (it != property_group.end()) {
+				it->second = true;
+			}
+		}
+		for (auto&pge : property_group) {
+			if (pge.second == false) {
+				changed = true;
+				tinyxml2::XMLElement* e = doc.NewElement("PropertyGroup");
+				{
+					tinyxml2::XMLElement* e1 = doc.NewElement("DebuggerFlavor");
+					e1->SetText("WindowsLocalDebugger");
+					e->LinkEndChild(e1);
+				}
+				e->SetAttribute("Condition", pge.first.c_str());
+				root->LinkEndChild(e);
+			}
+		}
+		for (tinyxml2::XMLElement* c = pgroup; c != nullptr; c = c->NextSiblingElement()) {
+			tinyxml2::XMLElement* ldwd = c->FirstChildElement("LocalDebuggerWorkingDirectory");
+			if (ldwd == nullptr) {
+				changed = true;
+				tinyxml2::XMLElement* e = doc.NewElement("LocalDebuggerWorkingDirectory");
+				e->SetText("$(OutDir)");
+				c->LinkEndChild(e);
+			} else {
+				if (strcmp(ldwd->GetText(), "$(OutDir)") != 0) {
+					changed = true;
+					ldwd->SetText("$(OutDir)");
+				}
+			}
+		}
+	}
+	if (changed == true) {
+		std::string outfile = file;
+		doc.SaveFile(outfile.c_str());
+		std::ifstream fin;
+		fin.open(outfile);
+		std::string str;
+		str.assign(std::istreambuf_iterator<char>(fin), std::istreambuf_iterator<char>());
+		fin.close();
+		str = replace_all(str, "&apos;", "\'");
+		std::ofstream fout;
+		fout.open(outfile);
+		fout << str;
+		fout.close();
+		return 0;
+	} else {
+		return 2;
+	}
+}
+void VSpringMsg(std::string name, std::string version, std::string msg,std::vector<std::string> args) {
+	int line = 78;
+	for (auto&e : args) {
+		if (e.length() > line) {
+			line = e.length();
+		}
+	}
+	std::vector<std::string> out = { name,version,msg,"" };
+	out.insert(out.end(), args.begin(),args.end());
+	for (int j = 0; j < line+2; j++)putchar('*'); putchar('\n');
+	for (int i = 0; i < out.size(); i++) {
+		putchar('*');
+		int beg = line / 2 - out[i].length() / 2;
+		for (int j = 0; j < beg; j++)putchar(' ');
+		std::cout << out[i];
+		for (int j = beg+out[i].length(); j < line; j++)putchar(' ');
+		putchar('*');
+		putchar('\n');
+	}
+	for (int j = 0; j < line + 2; j++)putchar('*'); putchar('\n');
+}
+
+
+void ClickMouse(int parm_x, int parm_y, char parm_left_flag) {
+	int x_pos = parm_x * 65535 / GetSystemMetrics(SM_CXSCREEN);
+	int y_pos = parm_y * 65535 / GetSystemMetrics(SM_CYSCREEN);
+
+	::mouse_event(MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE, x_pos, y_pos,
+				  0, ::GetMessageExtraInfo());
+	if (parm_left_flag) {
+		::mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_ABSOLUTE,
+					  x_pos, y_pos, 0, ::GetMessageExtraInfo());
+		::mouse_event(MOUSEEVENTF_LEFTUP | MOUSEEVENTF_ABSOLUTE,
+					  x_pos, y_pos, 0, ::GetMessageExtraInfo());
+	} else {
+		::mouse_event(MOUSEEVENTF_RIGHTDOWN | MOUSEEVENTF_ABSOLUTE,
+					  x_pos, y_pos, 0, ::GetMessageExtraInfo());
+		::mouse_event(MOUSEEVENTF_RIGHTUP | MOUSEEVENTF_ABSOLUTE,
+					  x_pos, y_pos, 0, ::GetMessageExtraInfo());
+	}
+}
+int ReloadSolution(std::string sln, std::string slnpath) {
+	// 0 : success
+	// 1 : fail
+	if (slnpath.back() == '\"') {
+		slnpath.pop_back();
+	}
+	///1. Terminate
+	//http://skensita.tistory.com/entry/API-Kill-Process
+	std::ostringstream oss;
+	oss << sln << " - Microsoft Visual Studio";
+	HWND hwnd=::FindWindowA(nullptr,oss.str().c_str());
+	if (hwnd == NULL) {
+		return 1;
+	}
+	RECT rect;
+	::GetWindowRect(hwnd, &rect);
+	POINT point;
+	::GetCursorPos(&point);
+	ClickMouse(rect.right - 10, rect.top + 10, 1);
+	::SetCursorPos(point.x, point.y);
+	///2. Reopen
+	oss.str("");
+	oss << "devenv" << " \""<< slnpath << "\"";
+	system(oss.str().c_str());
+	return 0;
+}
+int main(int argc, const char* argv[]) {
+	//argv[1] : vcxproj.user file
+	std::array<std::string, 4> msg = {
+		"Success"
+		,"Failed"
+		,"Already updated"
+		,"Argument incorrect"
+	};
+	int r = 3;
+	std::vector<std::string> args;
+	if (argc == 4) {
+		std::string file = argv[1];
+		r = ConfigXML(file);
+		if (r == 0) {
+			args.push_back("Warning! Your working directory is different with output directory.");
+			args.push_back("VSpring changed your working directory value.");
+			args.push_back("Please, Restart Visual Studio.");
+		}
+
+	}
+	VSpringMsg("VSpring(DebuggingProps)", "0.1.5", msg[r], args);
+	return EXIT_SUCCESS;
+}
