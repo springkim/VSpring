@@ -1,0 +1,13 @@
+md 3rdparty\include
+md 3rdparty\lib\x64\Debug
+md 3rdparty\lib\x64\Release
+md 3rdparty\lib\x86\Debug
+md 3rdparty\lib\x86\Release
+md 3rdparty\bin\x64\Debug
+md 3rdparty\bin\x64\Release
+md 3rdparty\bin\x86\Debug
+md 3rdparty\bin\x86\Release
+md 3rdparty\staticlib\x64\Debug
+md 3rdparty\staticlib\x64\Release
+md 3rdparty\staticlib\x86\Debug
+md 3rdparty\staticlib\x86\Release

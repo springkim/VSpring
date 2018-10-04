@@ -1,50 +1,12 @@
 # VSpring
-Visual studio setup project
+Visual studio 3rdparty setup project
 
-### What is this
+### Usage
 
-This is the **Visual Studio** setting project.
-
-It apply **Additional library path** and copy  **dll** files to location of **exe** file  automatically. And set working directory as **$(OutDir)**.
-
-### Support platform
-* `Windows 10 x64`
-* `Visual Studio 2015`
-* `x86/Debug`, `x86/Release`, `x64/Debug`, `x64/Release`
-
-### How to use
-
-##### 1. Install vspring
-Download [install_vspring.exe](https://www.dropbox.com/s/9s3f6lhrxiib2cy/install_vspring.exe?dl=1) and run as administrator or follow this command.
-```
-git clone https://github.com/springkim/VSpring
-cd VSpring
-install_vspring.exe
-```
-
-##### 2.Apply to project
-Both **VSpring32.props** and **VSpring64.props** are in the same directory, When All the installation are finished.
-
-First, Make any project whatever you want.
-![](https://i.imgur.com/DkMLJhT.png)
-
-Second, Copy both **VSpring32.props** and **VSpring64.props** into **Solution directory**.
-![](https://i.imgur.com/Bw1nimK.png)
-
-Third, Open **Property Manager** and append the **VSpring??.props** according to your project platform.
-![](https://i.imgur.com/kWvEPHf.png)
-
-Finally, Put `#include<VSpring>` on your source file. And build.
-
-Then **VSpring** changes your project property. So, Visual studio will show message about reload.
-
-It shows only once. Click **Reload All**.
-![](https://i.imgur.com/vhw6PsM.png)
-
-If you want use 3rdparty library, Follow this rule.
+###### 1. Copy `3rdparty.bat` and `3rdparty.props` into your solution directory.
+###### 2. Run `3rdparty.bat`. It will generate below directory structure.
 
 ```
-Solution Directory
 ┌ 3rdparty
 │  ├ bin
 │  │  ├ x64         (x64 Debug/Release dll)
@@ -60,14 +22,20 @@ Solution Directory
 │  │  └ x86         (x86 Debug/Release lib)
 │  │     ├ Debug    (x86 Debug only lib)
 │  │     └ Release  (x86 Release only lib)
-│  └ include
+│  ├ include
+│  └ staticlib
+│     ├ x64         (x64 Debug/Release static lib)
+│     │  ├ Debug    (x64 Debug only static lib)
+│     │  └ Release  (x64 Release only static lib)
+│     └ x86         (x86 Debug/Release static lib)
+│        ├ Debug    (x86 Debug only static lib)
+│        └ Release  (x86 Release only static lib)
 │  
 ├ Solution.sln
-├ VSpring32.props
-└ VSpring64.props
+└ 3rdparty.props
 ```
 
-There is a sample project with opencv library in git reposotory.
+###### 3. Select `3rdparty.props` on each project.
 
 
 
