@@ -23,7 +23,7 @@ Visual studio 3rdparty setup project
 │  │     ├ Debug    (x86 Debug only lib)
 │  │     └ Release  (x86 Release only lib)
 │  ├ include
-│  └ staticlib
+│  └ staticlib$(PlatformToolsetVersion)
 │     ├ x64         (x64 Debug/Release static lib)
 │     │  ├ Debug    (x64 Debug only static lib)
 │     │  └ Release  (x64 Release only static lib)
@@ -37,5 +37,8 @@ Visual studio 3rdparty setup project
 
 ###### 3. Select `3rdparty.props` on each project.
 
+##### Comment
+
+`$(PlatformToolsetVersion)` 120,140,141
 
 

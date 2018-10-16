@@ -10,7 +10,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)3rdparty/include/</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(SolutionDir)/3rdparty/lib/$(PlatformTarget)/$(Configuration)/;$(SolutionDir)/3rdparty/lib/$(PlatformTarget)/;$(SolutionDir)/3rdparty/staticlib/$(PlatformTarget)/$(Configuration)/;$(SolutionDir)/3rdparty/staticlib/$(PlatformTarget)/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)/3rdparty/lib/$(PlatformTarget)/$(Configuration)/;$(SolutionDir)/3rdparty/lib/$(PlatformTarget)/;$(SolutionDir)/3rdparty/staticlib$(PlatformToolsetVersion)/$(PlatformTarget)/$(Configuration)/;$(SolutionDir)/3rdparty/staticlib$(PlatformToolsetVersion)/$(PlatformTarget)/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /d /i /Y "$(SolutionDir)3rdparty\bin\$(PlatformTarget)\$(Configuration)\*.*" "$(TargetDir)"
