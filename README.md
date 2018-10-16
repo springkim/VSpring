@@ -37,6 +37,10 @@ Visual studio 3rdparty setup project
 
 ###### 3. Select `3rdparty.props` on each project.
 
+###### 4. Run `vspring.bat`. It will generate `vspring.h`.
+
+###### 5. Include `vspring.h`.
+
 ##### Comment
 
 `$(PlatformToolsetVersion)` 120,140,141
