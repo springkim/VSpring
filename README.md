@@ -16,7 +16,7 @@ This project will help you add libraries to Visual C++ more easily.
 1. Copy all files from this store to the location where the sln file is located.
 
 2. Run **3rdparty.bat** if you are using the library directly.
-If you are using a other library, run **libdownload.bat** to install the library.
+If you are using a other library, run **local_install.bat** to install the library.
 Running the **3rdparty.bat** file creates the following directory:
 
 3. Add **3rdparty.props** in the Properties Manager of Visual Studio.
@@ -58,3 +58,4 @@ Running the **3rdparty.bat** file creates the following directory:
 
 https://github.com/cisco/openh264
 
+ 

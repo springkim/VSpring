@@ -18,4 +18,5 @@ xcopy /d /i /Y "$(SolutionDir)3rdparty\bin\$(PlatformTarget)\*.*" "$(TargetDir)"
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup />
-</Project>
+</Project> 
+
