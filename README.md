@@ -1,4 +1,9 @@
-# VSpring
+This repository has been deprecated
+Use the cip instead.
+https://github.com/springkim/cip
+
+
+## VSpring
 This project will help you add libraries to Visual C++ more easily.
 
 ### Files
